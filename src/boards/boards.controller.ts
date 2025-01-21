@@ -6,12 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatus } from './boards-status.enum';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Controller('api/boards') // 엔드포인트
 export class BoardsController {
@@ -40,6 +42,13 @@ export class BoardsController {
     return this.boardsService.createBoard(createBoardDto);
   }
 
+  // 특정 번호의 게시글 수정 기능
+  @Put('/:id')
+  updateBoardById(
+    @Param('id') id: number,
+    @Body() updateBoardDto: UpdateBoardDto): Board {
+    return this.boardsService.updateBoardById(id, updateBoardDto);
+  }
   // 특정 번호의 게시글 일부 수정 기능
   @Patch('/:id')
   updateBoardStatusById(
@@ -47,6 +56,7 @@ export class BoardsController {
     @Body('status') status: BoardStatus): Board {
     return this.boardsService.updateBoardStatusById(id, status);
   }
+
 
   // 게시글 삭제 기능
   @Delete('/:id')
