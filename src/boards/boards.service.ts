@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Board } from './boards.entity';
-import { BoardsStatus } from './boards-status.enum';
+import { BoardStatus } from './boards-status.enum';
 import { CreateBoardDto } from './dto/create-board.dto';
 
 @Injectable()
@@ -18,28 +18,35 @@ export class BoardsService {
     // 리턴객체(board) => board.id == id 조건문
   }
   // 키워드(작성자)로 검색한 게시글 조회 기능
-  getBoardsByKeyword(author: string): Board[]{
+  getBoardsByKeyword(author: string): Board[] {
     return this.boards.filter((board) => board.author === author);
   }
 
   // 게시글 생성 기능
   createBoard(createBoardDto: CreateBoardDto) {
-    const {author, title, contents} = createBoardDto;
-    
+    const { author, title, contents } = createBoardDto;
+
     const board: Board = {
       id: this.boards.length + 1, // 임시 Auto Increament 기능
       author,
       title,
       contents,
-      status: BoardsStatus.PUBLIC,
+      status: BoardStatus.PUBLIC,
     };
 
     const savedBoard = this.boards.push(board);
     return savedBoard;
   }
 
+  // 특정 번호의 게시글 일부 수정
+  updateBoardStatusById(id: number, status: BoardStatus): Board {
+    const foundBoard = this.getBoardDetailById(id);
+    foundBoard.status = status;
+    return foundBoard;
+  }
+
   // 게시글 삭제 기능(필터로 유사하게)
-  deleteBoardById(id: number): void{
+  deleteBoardById(id: number): void {
     this.boards = this.boards.filter((board) => board.id != id);
   }
 }

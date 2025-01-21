@@ -1,4 +1,4 @@
-export enum BoardsStatus{
+export enum BoardStatus{
     PUBLIC = 'PUBLIC',
     PRIVATE = 'PRIVATE',
 }
