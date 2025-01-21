@@ -1,8 +1,9 @@
-import { BoardsStatus } from "./boards-status.enum";
+import { BoardsStatus } from './boards-status.enum';
 
-export class Board{
-    id: string;
-    title: string;
-    contents: string;
-    status: BoardsStatus;
+export class Board {
+  id: number;
+  author: string;
+  title: string;
+  contents: string;
+  status: BoardsStatus;
 }
