@@ -13,7 +13,7 @@ export class BoardsService {
     return this.boards;
   }
   // 특정 게시글 조회 기능
-  getBoardBoardDetailById(id: number): Board {
+  getBoardDetailById(id: number): Board {
     return this.boards.find((board) => board.id == id);
     // 리턴객체(board) => board.id == id 조건문
   }
@@ -36,5 +36,10 @@ export class BoardsService {
 
     const savedBoard = this.boards.push(board);
     return savedBoard;
+  }
+
+  // 게시글 삭제 기능(필터로 유사하게)
+  deleteBoardById(id: number): void{
+    this.boards = this.boards.filter((board) => board.id != id);
   }
 }
