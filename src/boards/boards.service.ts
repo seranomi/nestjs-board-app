@@ -7,10 +7,16 @@ export class BoardsService {
   // 데이터 베이스
   private boards: Board[] = [];
 
-  // 게시글 조회 기능
+  // 모든 게시글 조회 기능
   getAllBoards(): Board[] {
     return this.boards;
   }
+  // 특정 게시글 조회 기능
+  getBoardBoardDetailById(id: number): Board {
+    return this.boards.find((board) => board.id == id);
+    // 리턴객체(board) => board.id == id 조건문
+  }
+
   // 게시글 생성 기능
   createBoard(author: string, title: string, contents: string) {
     const board: Board = {
