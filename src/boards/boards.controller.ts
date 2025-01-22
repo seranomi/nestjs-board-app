@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
@@ -31,13 +33,14 @@ export class BoardsController {
     return this.boardsService.getBoardDetailById(id);
   }
   // 키워드(작성자)로 검색한 게시글 조회 기능
-  @Get('/search/:keyword')
+  @Get('/search/:keyword') // 쿼리 스트링 keyword?author=Jack
   getBoardsByKeyword(@Query('author') author: string): Board[] {
     return this.boardsService.getBoardsByKeyword(author);
   }
 
   // 게시글 작성 기능
   @Post('/')
+  @UsePipes(ValidationPipe)// 파라미터시점에서 유효성 검사
   createBoard(@Body() createBoardDto: CreateBoardDto) {
     return this.boardsService.createBoard(createBoardDto);
   }
