@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Board } from './boards.entity';
 import { BoardStatus } from './boards-status.enum';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -15,8 +15,11 @@ export class BoardsService {
   }
   // 특정 게시글 조회 기능
   getBoardDetailById(id: number): Board {
-    return this.boards.find((board) => board.id == id);
-    // 리턴객체(board) => board.id == id 조건문
+    const foundBoard = this.boards.find((board) => board.id == id);
+    if(!foundBoard) {
+      throw new NotFoundException(`Board with ID ${id} not found`);
+    }
+    return foundBoard
   }
   // 키워드(작성자)로 검색한 게시글 조회 기능
   getBoardsByKeyword(author: string): Board[] {
