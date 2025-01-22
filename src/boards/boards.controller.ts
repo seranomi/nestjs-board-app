@@ -16,8 +16,10 @@ import { Board } from './boards.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatus } from './boards-status.enum';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { BoardStatusValidationPipe } from './pipes/board-status-vaildation.pipe';
 
 @Controller('api/boards') // 엔드포인트
+@UsePipes(ValidationPipe)
 export class BoardsController {
   // 생성자 주입
   constructor(private boardsService: BoardsService) {}
@@ -39,8 +41,7 @@ export class BoardsController {
   }
 
   // 게시글 작성 기능
-  @Post('/')
-  @UsePipes(ValidationPipe)// 파라미터시점에서 유효성 검사
+  @Post('/') // 파라미터시점에서 유효성 검사
   createBoard(@Body() createBoardDto: CreateBoardDto) {
     return this.boardsService.createBoard(createBoardDto);
   }
@@ -49,17 +50,18 @@ export class BoardsController {
   @Put('/:id')
   updateBoardById(
     @Param('id') id: number,
-    @Body() updateBoardDto: UpdateBoardDto): Board {
+    @Body() updateBoardDto: UpdateBoardDto,
+  ): Board {
     return this.boardsService.updateBoardById(id, updateBoardDto);
   }
   // 특정 번호의 게시글 일부 수정 기능
   @Patch('/:id')
   updateBoardStatusById(
     @Param('id') id: number,
-    @Body('status') status: BoardStatus): Board {
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+  ): Board {
     return this.boardsService.updateBoardStatusById(id, status);
   }
-
 
   // 게시글 삭제 기능
   @Delete('/:id')

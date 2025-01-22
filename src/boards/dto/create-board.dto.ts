@@ -11,6 +11,5 @@ export class CreateBoardDto {
   
   @IsNotEmpty()
   @IsString()
-  @IsStrongPassword()
   contents: string;
 }
