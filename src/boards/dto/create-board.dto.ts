@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
+import { IsNotEmpty, IsString, Matches } from "class-validator";
 
 export class CreateBoardDto {
   @IsNotEmpty()
   @IsString()
   author: string;
+  // 대문자, 소문자, 숫자, 특수문자 포함
 
   @IsNotEmpty()
   @IsString()
@@ -12,4 +13,7 @@ export class CreateBoardDto {
   @IsNotEmpty()
   @IsString()
   contents: string;
+
+  // @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, { message: 'Password too weak', }) 
+  // password: string;
 }
