@@ -21,10 +21,10 @@ export class BoardRepository {
     try {
       const [result] = await this.connectionPool.query(selectQuery);
 	  return result as Board[];
-    } catch {
+    } catch (err){
 		throw new InternalServerErrorException('Database query failed', err);
 	}
   }
 
-  
+
 }
