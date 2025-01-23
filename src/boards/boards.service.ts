@@ -13,11 +13,11 @@ import { BoardRepository } from './boards.repository';
 @Injectable()
 export class BoardsService {
   // Repository 계층 DI
-  constructor(private boardsRepository: BoardRepository) {}
+  constructor(private boardRepository: BoardRepository) {}
 
   // 모든 게시글 조회 기능
   async getAllBoards(): Promise<Board[]> {
-    const foundBoards = await this.boardsRepository.findAll();
+    const foundBoards = await this.boardRepository.findAll();
     return foundBoards;
   }
   // // 특정 게시글 조회 기능
@@ -38,23 +38,18 @@ export class BoardsService {
   // }
 
   // 게시글 생성 기능
-  createBoard(createBoardDto: CreateBoardDto) {
+  createBoard(createBoardDto: CreateBoardDto): Promise<string> {
     const { author, title, contents } = createBoardDto;
 
     const board: Board = {
-      id: this.boards.length + 1, // 임시 Auto Increament 기능
-      author,
+      id: 0, // 임시 초기화
+      author, // author: createBoardDto.author
       title,
       contents,
       status: BoardStatus.PUBLIC,
     };
-
-    try {
-      this.boards.push(board);
-      return board; // `push`는 저장된 길이를 반환하므로 `board` 객체를 반환하도록 수정
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to create board');
-    }
+    const createBoard = this.boardRepository.saveBoard(board);
+    return createBoard; // `push`는 저장된 길이를 반환하므로 `board` 객체를 반환하도록 수정
   }
 
   // // 특정 번호의 게시글 수정
@@ -70,7 +65,7 @@ export class BoardsService {
   //   const foundBoard = this.getBoardDetailById(id);
 
   //   // status는 PUBLIC PRIVATE 두 값중 하나만 갖는다.
-    
+
   //   foundBoard.status = status;
   //   return foundBoard;
   // }
