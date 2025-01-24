@@ -12,5 +12,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   database: process.env.DB_NAME,
   entities: [__dirname + '/../**/*.entity.{js,ts}'], // 엔티티 파일의 위치
   synchronize: true, // 개발중에만
-  logging: true,
+  logging: true, // SQL 로그가 출력
 };
