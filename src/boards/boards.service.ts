@@ -1,19 +1,22 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { Board } from './boards.entity';
 import { BoardStatus } from './boards-status.enum';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { BoardRepository } from './boards.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 
 @Injectable()
 export class BoardsService {
   // Repository 계층 DI
-  constructor(private boardRepository: BoardRepository) {}
+  constructor(
+    @InjectRepository(Board)
+    private boardRepository: Repository<Board>
+  ) {}
 
   // 모든 게시글 조회 기능
   async getAllBoards(): Promise<Board[]> {
