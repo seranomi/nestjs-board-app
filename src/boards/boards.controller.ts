@@ -9,7 +9,6 @@ import { BoardStatusValidationPipe } from './pipes/board-status-vaildation.pipe'
 import { BoardStatus } from './boards-status.enum';
 
 @Controller('api/boards') // 엔드포인트
-@UsePipes(ValidationPipe)
 export class BoardsController {
   // 생성자 주입
   constructor(private boardsService: BoardsService) {}
