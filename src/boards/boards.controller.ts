@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -7,11 +7,24 @@ import { BoardSearchResponseDto } from './dto/board-search-response.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-vaildation.pipe';
 import { BoardStatus } from './boards-status.enum';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/custom-role.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRole } from 'src/auth/users-role.enum';
 
 @Controller('api/boards') // 엔드포인트
+@UseGuards(AuthGuard(), RolesGuard)
 export class BoardsController {
   // 생성자 주입
   constructor(private boardsService: BoardsService) {}
+
+  // 게시글 작성 기능
+  @Post('/') // 파라미터시점에서 유효성 검사
+  @Roles(UserRole.USER) // User만 게시글 작성 가능
+  async createBoard(@Body() createBoardDto: CreateBoardDto): Promise<BoardResponseDto> {
+    const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto));
+    return boardResponseDto;
+  }
 
   // 모든 게시글 조회 기능
   @Get('/')
@@ -34,13 +47,6 @@ export class BoardsController {
     return boardsResponseDto;
   }
 
-  // 게시글 작성 기능
-  @Post('/') // 파라미터시점에서 유효성 검사
-  async createBoard(@Body() createBoardDto: CreateBoardDto): Promise<BoardResponseDto> {
-    const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto));
-    return boardResponseDto;
-  }
-
   // 특정 번호의 게시글 수정 기능
   @Put('/:id')
   async updateBoardById(
@@ -59,6 +65,7 @@ export class BoardsController {
 
   // 게시글 삭제 기능
   @Delete('/:id')
+  @Roles(UserRole.ADMIN, UserRole.USER) // ADMIN, USER만 게시글 삭제 가능
   async deleteBoardById(@Param('id') id: number): Promise<void> {
     await this.boardsService.deleteBoardById(id);
   }
