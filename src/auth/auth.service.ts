@@ -5,12 +5,14 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		@InjectRepository(User)
-		private UsersRepository: Repository<User>
+		private UsersRepository: Repository<User>,
+		private jwtService: JwtService
 	){}
 
 	// 회원 가입 기능
@@ -42,13 +44,27 @@ export class AuthService {
 	async signIn(loginUserDto: LoginUserDto): Promise<string> {
 		const { email, password } = loginUserDto;
 
-		const existingUser = await this.findUserByEmail(email);
+		try{
 
-		if (!existingUser || !(await bcrypt.compare(password, existingUser.password))){
-			throw new UnauthorizedException('Incorrect email or password');
+			const existingUser = await this.findUserByEmail(email);
+			
+			if (!existingUser || !(await bcrypt.compare(password, existingUser.password))){
+				throw new UnauthorizedException('Incorrect email or password');
+			}
+			
+			// [1] JWT토큰 생성
+			const payload = {
+				id: existingUser.id,
+				email: existingUser.email,
+				username: existingUser.username,
+				role: existingUser.role
+			};
+			const accessToken = await this.jwtService.sign(payload)
+			
+			return accessToken;
+		} catch (error) {
+			throw error;
 		}
-
-		return 'login success';
 	}
 	
 	// 이메일 중복 확인 메서드
