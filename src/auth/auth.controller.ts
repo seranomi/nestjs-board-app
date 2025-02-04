@@ -1,13 +1,16 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/auth')
 export class AuthController {
-	constructor(private authService: AuthService){}
+	constructor(
+		private authService: AuthService,
+	){}
 
 	// 회원 가입 기능
 	@Post('/signup')
@@ -32,4 +35,10 @@ export class AuthController {
 		res.send({message: "Login Success"});
 	}
 	
+	@Post('/test')
+	@UseGuards(AuthGuard('jwt'))
+	testForAuth(@Req() req:Request) {
+		console.log(req.user); //인증된 사용자의 정보 출력
+		return { message : 'Authenticated User', user: req.user};
+	}
 }
