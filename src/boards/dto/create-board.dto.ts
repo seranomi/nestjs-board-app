@@ -3,11 +3,6 @@ import { IsNotEmpty, IsString, Matches } from "class-validator";
 export class CreateBoardDto {
   @IsNotEmpty()
   @IsString()
-  author: string;
-  // 대문자, 소문자, 숫자, 특수문자 포함
-
-  @IsNotEmpty()
-  @IsString()
   title: string;
   
   @IsNotEmpty()

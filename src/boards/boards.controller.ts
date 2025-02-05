@@ -11,6 +11,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/custom-role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/auth/users-role.enum';
+import { User } from 'src/auth/user.entity';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('api/boards') // 엔드포인트
 @UseGuards(AuthGuard(), RolesGuard)
@@ -21,8 +23,8 @@ export class BoardsController {
   // 게시글 작성 기능
   @Post('/') // 파라미터시점에서 유효성 검사
   @Roles(UserRole.USER) // User만 게시글 작성 가능
-  async createBoard(@Body() createBoardDto: CreateBoardDto): Promise<BoardResponseDto> {
-    const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto));
+  async createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() logginedUser: User): Promise<BoardResponseDto> {
+    const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto, logginedUser));
     return boardResponseDto;
   }
 
