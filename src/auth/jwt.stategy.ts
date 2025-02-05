@@ -5,7 +5,6 @@ import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import * as dotenv from 'dotenv';
-import { Request } from "express";
 dotenv.config();
 
 @Injectable()
