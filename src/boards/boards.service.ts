@@ -47,6 +47,7 @@ export class BoardsService {
       title,
       contents,
       status: BoardStatus.PUBLIC,
+      user: null
     };
     const createBoard = this.boardRepository.save(newBoard);
     return createBoard; // `push`는 저장된 길이를 반환하므로 `board` 객체를 반환하도록 수정

@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BoardStatus } from './boards-status.enum';
+import { User } from 'src/auth/user.entity';
 @Entity()
 export class Board {
   @PrimaryGeneratedColumn() // PK + Auto Increment
@@ -16,4 +17,7 @@ export class Board {
 
   @Column()
   status: BoardStatus;
+
+  @ManyToOne(Type => User, user => user.boards, { eager: false })
+  user: User;
 }

@@ -34,6 +34,7 @@ export class AuthService {
 			password: hashedPassword,
 			email,
 			role,
+			boards: []
 		};
 
 		const createdUser = await this.UsersRepository.save(newUser);
