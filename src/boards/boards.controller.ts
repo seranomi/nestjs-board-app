@@ -30,8 +30,17 @@ export class BoardsController {
 
   // 모든 게시글 조회 기능
   @Get('/')
+  @Roles(UserRole.USER)
   async getAllBoards(): Promise<BoardResponseDto[]> {
     const boards: Board[] = await this.boardsService.getAllBoards();
+    const boardsResponseDto = boards.map((board) => new BoardResponseDto(board));
+    return boardsResponseDto;
+  }
+  // 나의 게시글 조회 기능(로그인 유저)
+  @Get('/myboards')
+  @Roles(UserRole.USER)
+  async getMyAllBoards(@GetUser() logginedUser: User): Promise<BoardResponseDto[]> {
+    const boards: Board[] = await this.boardsService.getMyAllBoards(logginedUser);
     const boardsResponseDto = boards.map((board) => new BoardResponseDto(board));
     return boardsResponseDto;
   }
