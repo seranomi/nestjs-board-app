@@ -66,18 +66,19 @@ export class BoardsController {
     const boardResponseDto = new BoardResponseDto(await this.boardsService.updateBoardById(id, updateBoardDto));
     return boardResponseDto;
   }
-  // 특정 번호의 게시글 일부 수정 기능
+  // 특정 번호의 게시글 일부 수정 기능 <ADMIN>
   @Patch('/:id')
+  @Roles(UserRole.ADMIN)
   async updateBoardStatusById(
     @Param('id') id: number,
     @Body('status', BoardStatusValidationPipe) status: BoardStatus): Promise<void> {
     await this.boardsService.updateBoardStatusById(id, status);
   }
 
-  // 게시글 삭제 기능
+  // 특정 번호의 게시글 삭제 기능
   @Delete('/:id')
-  @Roles(UserRole.ADMIN, UserRole.USER) // ADMIN, USER만 게시글 삭제 가능
-  async deleteBoardById(@Param('id') id: number): Promise<void> {
-    await this.boardsService.deleteBoardById(id);
+  @Roles(UserRole.USER, UserRole.ADMIN) // ADMIN, USER만 게시글 삭제 가능
+  async deleteBoardById(@Param('id') id: number, @GetUser() logginedUser: User): Promise<void> {
+    await this.boardsService.deleteBoardById(id, logginedUser);
   }
 }
