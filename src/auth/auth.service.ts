@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -9,6 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
+
 	constructor(
 		@InjectRepository(User)
 		private UsersRepository: Repository<User>,
@@ -16,8 +18,10 @@ export class AuthService {
 	){}
 
 	// 회원 가입 기능
-	async createUser(createUserDto: CreateUserDto): Promise<User> {
+	async signUp(createUserDto: CreateUserDto): Promise<User> {
 		const { username, password, email, role } = createUserDto;
+		this.logger.verbose(`Attempting to sign up user with email: ${email}`);
+
 		if (!username || !password || !email || !role){
 			throw new BadRequestException('Something went wrong.');
 		}
@@ -31,7 +35,7 @@ export class AuthService {
 		const newUser: User = {
 			id: 0,
 			username,
-			password: hashedPassword,
+			password: hashedPassword, // 해싱된 비밀번호 사용
 			email,
 			role,
 			boards: []

@@ -17,7 +17,7 @@ export class AuthController {
 	// 회원 가입 기능
 	@Post('/signup')
 	async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto>{
-		const userResponseDto = new UserResponseDto(await this.authService.createUser(createUserDto))
+		const userResponseDto = new UserResponseDto(await this.authService.signUp(createUserDto))
 		return userResponseDto;
 	}
 
