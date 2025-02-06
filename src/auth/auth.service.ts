@@ -1,4 +1,5 @@
-import { BadRequestException, ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, Res, UnauthorizedException } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -45,7 +46,7 @@ export class AuthService {
 		return createdUser;
 	}
 
-	// 로그인 ***
+	// 로그인
 	async signIn(loginUserDto: LoginUserDto): Promise<string> {
 		const { email, password } = loginUserDto;
 		this.logger.verbose(`Attempting to sign in user with email: ${email}`);
@@ -64,9 +65,11 @@ export class AuthService {
 				role: existingUser.role
 			};
 			const accessToken = await this.jwtService.sign(payload)
-			
+
+			this.logger.verbose(`User signed in successfully with email: ${email}`);
 			return accessToken;
 		} catch (error) {
+			this.logger.error('Signin failed', error.stack);
 			throw error;
 		}
 	}
