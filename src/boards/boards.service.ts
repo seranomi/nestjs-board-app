@@ -111,11 +111,11 @@ export class BoardsService {
         foundBoard.contents = contents;
         const updatedBoard = await this.boardRepository.save(foundBoard);
 
-        this.logger.verbose(`Board wiht ID ${id} updated successfully`);
+        this.logger.verbose(`Board with ID ${id} updated successfully`);
         return updatedBoard;
     }
 
-    // 특정 번호의 게시글 일부 수정
+    // 특정 번호의 게시글 일부 수정 ***
     async updateBoardStatusById(id: number, status: BoardStatus): Promise<void> {
         this.logger.verbose(`ADMIN is attempting to update the status of board with ID ${id} to ${status}`);
 

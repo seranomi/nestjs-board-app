@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -17,13 +17,16 @@ import { GetUser } from 'src/auth/get-user.decorator';
 @Controller('api/boards') // 엔드포인트
 @UseGuards(AuthGuard(), RolesGuard)
 export class BoardsController {
+  private readonly logger = new Logger(BoardsController.name); // Logger 인스턴스 생성
+
   // 생성자 주입
   constructor(private boardsService: BoardsService) {}
 
   // 게시글 작성 기능
-  @Post('/') // 파라미터시점에서 유효성 검사
+  @Post('/') // PostMappint 핸들러 데코레이터
   @Roles(UserRole.USER) // User만 게시글 작성 가능
   async createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() logginedUser: User): Promise<BoardResponseDto> {
+    this.logger.verbose(`User ${logginedUser.username} creatin a new board. Data: ${JSON.stringify(createBoardDto)}`);
     const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto, logginedUser));
     return boardResponseDto;
   }
@@ -32,6 +35,7 @@ export class BoardsController {
   @Get('/')
   @Roles(UserRole.USER)
   async getAllBoards(): Promise<BoardResponseDto[]> {
+    this.logger.verbose('Retrieving all boards');
     const boards: Board[] = await this.boardsService.getAllBoards();
     const boardsResponseDto = boards.map((board) => new BoardResponseDto(board));
     return boardsResponseDto;
@@ -40,6 +44,7 @@ export class BoardsController {
   @Get('/myboards')
   @Roles(UserRole.USER)
   async getMyAllBoards(@GetUser() logginedUser: User): Promise<BoardResponseDto[]> {
+    this.logger.verbose(`User ${logginedUser.username} retrieving their boards`);
     const boards: Board[] = await this.boardsService.getMyAllBoards(logginedUser);
     const boardsResponseDto = boards.map((board) => new BoardResponseDto(board));
     return boardsResponseDto;
@@ -47,12 +52,14 @@ export class BoardsController {
   // 특정 게시글 조회 기능
   @Get('/:id')
   async getBoardDetailById(@Param('id') id: number): Promise<BoardResponseDto> {
+    this.logger.verbose(`Retrieving board with ID ${id}`);
     const boardResponseDto = new BoardResponseDto(await this.boardsService.getBoardDetailById(id));
     return boardResponseDto;
   }
   // 키워드(작성자)로 검색한 게시글 조회 기능
   @Get('/search/:keyword') // 쿼리 스트링 keyword?author=Jack
   async getBoardsByKeyword(@Query('author') author: string): Promise<BoardSearchResponseDto[]> {
+    this.logger.verbose(`Searching boards by author ${author}`);
     const boards: Board[] = await this.boardsService.getBoardsByKeyword(author);
     const boardsResponseDto = boards.map((board) => new BoardSearchResponseDto(board));
     return boardsResponseDto;
@@ -60,9 +67,8 @@ export class BoardsController {
 
   // 특정 번호의 게시글 수정 기능
   @Put('/:id')
-  async updateBoardById(
-    @Param('id') id: number,
-    @Body() updateBoardDto: UpdateBoardDto): Promise<BoardResponseDto> {
+  async updateBoardById(@Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto): Promise<BoardResponseDto> {
+    this.logger.verbose(`Updating board with ID ${id}`);
     const boardResponseDto = new BoardResponseDto(await this.boardsService.updateBoardById(id, updateBoardDto));
     return boardResponseDto;
   }
@@ -70,8 +76,10 @@ export class BoardsController {
   @Patch('/:id')
   @Roles(UserRole.ADMIN)
   async updateBoardStatusById(
-    @Param('id') id: number,
-    @Body('status', BoardStatusValidationPipe) status: BoardStatus): Promise<void> {
+    @Param('id') id: number, 
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+    @GetUser() logginedUser: User): Promise<void> {
+    this.logger.verbose(`Admin ${logginedUser.username} updating status of board ID ${id} to ${status}`);
     await this.boardsService.updateBoardStatusById(id, status);
   }
 

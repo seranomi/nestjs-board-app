@@ -45,21 +45,20 @@ export class AuthService {
 		return createdUser;
 	}
 
-	// 로그인
+	// 로그인 ***
 	async signIn(loginUserDto: LoginUserDto): Promise<string> {
 		const { email, password } = loginUserDto;
+		this.logger.verbose(`Attempting to sign in user with email: ${email}`);
 
 		try{
-
 			const existingUser = await this.findUserByEmail(email);
 			
 			if (!existingUser || !(await bcrypt.compare(password, existingUser.password))){
+				this.logger.warn(`Failed login attempt for email: ${email}`);
 				throw new UnauthorizedException('Incorrect email or password');
 			}
-			
 			// [1] JWT토큰 생성
 			const payload = {
-				id: existingUser.id,
 				email: existingUser.email,
 				username: existingUser.username,
 				role: existingUser.role
@@ -74,10 +73,14 @@ export class AuthService {
 	
 	// 이메일 중복 확인 메서드
 	private async checkEmailExists(email: string): Promise<void> {
+		this.logger.verbose(`Checking if email exists: ${email}`);
+
 		const existingUser = await this.UsersRepository.findOne({ where: { email } });
 		if(existingUser) {
+			this.logger.warn(`Email already exists: ${email}`);
 			throw new ConflictException('Email already exists');
 		}
+		this.logger.verbose(`Email is available: ${email}`);
 	}
 
 	// 이메일로 유저 찾기 메서드
@@ -87,7 +90,9 @@ export class AuthService {
 
 	// 비밀번호 해싱 암호화 메서드
 	private async hashPassword(password: string): Promise<string> {
+		this.logger.verbose(`Hashing password`);
+
 		const salt = await bcrypt.genSalt(); // 솔트 생성
-		return await bcrypt.hash(password, salt);
+		return await bcrypt.hash(password, salt); // 비밀번호 해싱
 	}
 }
