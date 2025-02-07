@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { BoardsModule } from './boards/boards.module';
+import { ArticlesModule } from './articles/articles.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
@@ -9,21 +9,21 @@ import { UnauthorizedExceptionFilter } from './common/filters/unauthorization.fi
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
-  imports: [
-    GlobalModule,
-    TypeOrmModule.forRoot(typeOrmConfig),
-    BoardsModule,
-    AuthModule
-  ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: UnauthorizedExceptionFilter,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor,
-    },
-  ]
+    imports: [
+        GlobalModule,
+        TypeOrmModule.forRoot(typeOrmConfig),
+        ArticlesModule,
+        AuthModule,
+    ],
+    providers: [
+        {
+            provide: APP_FILTER,
+            useClass: UnauthorizedExceptionFilter,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: LoggingInterceptor,
+        },
+    ],
 })
 export class AppModule {}

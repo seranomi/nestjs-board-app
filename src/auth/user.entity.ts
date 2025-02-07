@@ -1,25 +1,24 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { UserRole } from "./users-role.enum";
-import { Board } from "src/boards/boards.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from './users-role.enum';
+import { Article } from 'src/articles/articles.entity';
 
 @Entity()
 export class User {
-	@PrimaryGeneratedColumn()
-	id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-	@Column()
-	username: string;
+    @Column()
+    username: string;
 
-	@Column()
-	password: string;
+    @Column()
+    password: string;
 
-	@Column({ unique: true })
-	email: string;
+    @Column({ unique: true })
+    email: string;
 
-	@Column()
-	role: UserRole;
+    @Column()
+    role: UserRole;
 
-	@OneToMany(Type => Board, board => board.author, { eager: false })
-	boards: Board[];
-
+    @OneToMany((Type) => Article, (article) => article.author, { eager: false })
+    articles: Article[];
 }

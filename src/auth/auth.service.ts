@@ -46,7 +46,7 @@ export class AuthService {
             password: hashedPassword, // 해싱된 비밀번호 사용
             email,
             role,
-            boards: [],
+            articles: [],
         };
 
         const createdUser = await this.UsersRepository.save(newUser);
