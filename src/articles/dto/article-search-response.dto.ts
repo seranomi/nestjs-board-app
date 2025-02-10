@@ -1,4 +1,4 @@
-import { Article } from '../articles.entity';
+import { Article } from '../entities/articles.entity';
 
 export class ArticleSearchResponseDto {
     author: string;

@@ -1,6 +1,6 @@
 import { User } from 'src/auth/user.entity';
-import { ArticleStatus } from '../articles-status.enum';
-import { Article } from '../articles.entity';
+import { ArticleStatus } from '../entities/articles-status.enum';
+import { Article } from '../entities/articles.entity';
 
 export class ArticleResponseDto {
     id: number;

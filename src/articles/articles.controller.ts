@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpStatus,
     Logger,
     Param,
     Patch,
@@ -14,22 +15,23 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
-import { Article } from './articles.entity';
+import { Article } from './entities/articles.entity';
 import { CreateArticleRequestDto } from './dto/create-article-request.dto';
 import { ArticleResponseDto } from './dto/article-response.dto';
 import { ArticleSearchResponseDto } from './dto/article-search-response.dto';
 import { UpdateArticleRequestDto } from './dto/update-article-request.dto';
 import { ArticleStatusValidationPipe } from './pipes/article-status-vaildation.pipe';
-import { ArticleStatus } from './articles-status.enum';
+import { ArticleStatus } from './entities/articles-status.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/custom-role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/auth/users-role.enum';
 import { User } from 'src/auth/user.entity';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { ApiResponseDto } from 'src/common/api-response-dto/api-response.dto';
 
 @Controller('api/articles') // 엔드포인트
-@UseGuards(AuthGuard(), RolesGuard)
+//@UseGuards(AuthGuard(), RolesGuard)
 export class ArticlesController {
     private readonly logger = new Logger(ArticlesController.name); // Logger 인스턴스 생성
 
@@ -38,7 +40,7 @@ export class ArticlesController {
 
     // 게시글 작성 기능
     @Post('/') // PostMappint 핸들러 데코레이터
-    @Roles(UserRole.USER) // User만 게시글 작성 가능
+    //@Roles(UserRole.USER) // User만 게시글 작성 가능
     async createArticle(
         @Body() createArticleRequestDto: CreateArticleRequestDto,
         @GetUser() logginedUser: User,
@@ -58,18 +60,26 @@ export class ArticlesController {
 
     // 모든 게시글 조회 기능
     @Get('/')
-    @Roles(UserRole.USER)
-    async getAllArticles(): Promise<ArticleResponseDto[]> {
-        this.logger.verbose('Retrieving all articles');
+    //@Roles(UserRole.USER)
+    async getAllArticles(): Promise<ApiResponseDto<ArticleResponseDto[]>> {
+        this.logger.verbose(`Try to Retrieving all Articles`);
+
         const articles: Article[] = await this.articlesService.getAllArticles();
         const articlesResponseDto = articles.map(
             (article) => new ArticleResponseDto(article),
         );
-        return articlesResponseDto;
+
+        this.logger.verbose(`Retrieved all articles list Successfully`);
+        return new ApiResponseDto(
+            true,
+            HttpStatus.OK,
+            'Article list retrive Successfully',
+            articlesResponseDto,
+        );
     }
     // 나의 게시글 조회 기능(로그인 유저)
     @Get('/myarticles')
-    @Roles(UserRole.USER)
+    //@Roles(UserRole.USER)
     async getMyAllArticles(
         @GetUser() logginedUser: User,
     ): Promise<ArticleResponseDto[]> {
@@ -87,12 +97,13 @@ export class ArticlesController {
     @Get('/:id')
     async getArticleDetailById(
         @Param('id') id: number,
-    ): Promise<ArticleResponseDto> {
-        this.logger.verbose(`Retrieving article with ID ${id}`);
-        const articleResponseDto = new ArticleResponseDto(
-            await this.articlesService.getArticleDetailById(id),
-        );
-        return articleResponseDto;
+    ): Promise<ApiResponseDto<ArticleResponseDto>> {
+        this.logger.verbose(`Try to Retrieving a article by id: ${id}`);
+
+        const articleResponseDto = new ArticleResponseDto(await this.articlesService.getArticleDetailById(id));
+
+        this.logger.verbose(`Retrieved a article by ${id} details Successfully`);
+        return new ApiResponseDto(true, HttpStatus.OK, 'Article retrive Successfully', articleResponseDto);
     }
     // 키워드(작성자)로 검색한 게시글 조회 기능
     @Get('/search/:keyword') // 쿼리 스트링 keyword?author=Jack
@@ -125,7 +136,7 @@ export class ArticlesController {
     }
     // 특정 번호의 게시글 일부 수정 기능 <ADMIN>
     @Patch('/:id')
-    @Roles(UserRole.ADMIN)
+    //@Roles(UserRole.ADMIN)
     async updateArticleStatusById(
         @Param('id') id: number,
         @Body('status', ArticleStatusValidationPipe) status: ArticleStatus,
@@ -139,7 +150,7 @@ export class ArticlesController {
 
     // 특정 번호의 게시글 삭제 기능
     @Delete('/:id')
-    @Roles(UserRole.USER, UserRole.ADMIN) // ADMIN, USER만 게시글 삭제 가능
+    //@Roles(UserRole.USER, UserRole.ADMIN) // ADMIN, USER만 게시글 삭제 가능
     async deleteArticleById(
         @Param('id') id: number,
         @GetUser() logginedUser: User,

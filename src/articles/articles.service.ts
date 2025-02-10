@@ -5,8 +5,8 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
-import { Article } from './articles.entity';
-import { ArticleStatus } from './articles-status.enum';
+import { Article } from './entities/articles.entity';
+import { ArticleStatus } from './entities/articles-status.enum';
 import { CreateArticleRequestDto } from './dto/create-article-request.dto';
 import { UpdateArticleRequestDto } from './dto/update-article-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';

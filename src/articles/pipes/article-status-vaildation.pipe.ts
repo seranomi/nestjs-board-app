@@ -4,7 +4,7 @@ import {
     ArgumentMetadata,
     BadRequestException,
 } from '@nestjs/common';
-import { ArticleStatus } from '../articles-status.enum';
+import { ArticleStatus } from '../entities/articles-status.enum';
 
 @Injectable()
 export class ArticleStatusValidationPipe implements PipeTransform {
